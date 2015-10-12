@@ -14,7 +14,6 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 public class AccountOperationTest {
 
-    AccountOperation accountOperation;
 
     @Test
     public void formats_dates() {
