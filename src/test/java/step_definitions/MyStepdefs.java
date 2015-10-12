@@ -1,6 +1,7 @@
 package step_definitions;
 
-import cucumber.api.PendingException;
+import banking.Account;
+import banking.AccountOperation;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -14,38 +15,56 @@ import java.util.List;
  */
 public class MyStepdefs {
 
+    private Account account = new Account();
 
-    @And("^a deposit of (\\d+) on (\\d+)-(\\d+)-(\\d+)$")
-    public void a_deposit_of_on_(int arg1, int arg2, int arg3, int arg4) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+
+    @Given("^a deposit of (\\d+) on (.*)$")
+    public void a_deposit_of_on_(BigDecimal amount, String date) throws Throwable {
+        account.deposit(amount, null);
     }
 
-    @And("^a withdrawal of (\\d+) on (\\d+)-(\\d+)-(\\d+)$")
-    public void a_withdrawal_of_on_(int arg1, int arg2, int arg3, int arg4) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+    @And("^a withdrawal of (\\d+) on (.*)$")
+    public void a_withdrawal_of_on_(BigDecimal amount, String date) throws Throwable {
+        account.withdraw(amount, null);
     }
-
-
 
     @When("^printing the bank statement$")
     public void printing_the_bank_statement() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+        List<AccountOperation> ops = account.statements();
     }
 
     @Then("^client should see:$")
-    public void client_should_see(List<AccountStatement> statements) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+    public void client_should_see(List<OperationSpec> statements) throws Throwable {
     }
 
 
-    public static class AccountStatement {
+    public static class OperationSpec {
         String date;
         BigDecimal credit;
         BigDecimal debit;
         BigDecimal balance;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || o instanceof AccountOperation) return false;
+
+            AccountOperation that = (AccountOperation) o;
+
+            if (!date.equals(that.getDate())) return false;
+            if (!credit.equals(that.getCredit())) return false;
+            if (!debit.equals(that.getDebit())) return false;
+            return balance.equals(that.getBalance());
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = date.hashCode();
+            result = 31 * result + credit.hashCode();
+            result = 31 * result + debit.hashCode();
+            result = 31 * result + balance.hashCode();
+            return result;
+        }
     }
 }
