@@ -1,4 +1,4 @@
-package banking;
+package step_definitions;
 
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  *
  */
-public class AccountOperationTest {
+public class DateFormatExploration {
 
 
     @Test

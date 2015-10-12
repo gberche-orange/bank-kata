@@ -6,9 +6,16 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  *
@@ -16,25 +23,27 @@ import java.util.List;
 public class MyStepdefs {
 
     private Account account = new Account();
+    private List<AccountOperation> printedOperations;
 
 
     @Given("^a deposit of (\\d+) on (.*)$")
     public void a_deposit_of_on_(BigDecimal amount, String date) throws Throwable {
-        account.deposit(amount, null);
+        account.deposit(amount, new Date());
     }
 
     @And("^a withdrawal of (\\d+) on (.*)$")
     public void a_withdrawal_of_on_(BigDecimal amount, String date) throws Throwable {
-        account.withdraw(amount, null);
+        account.withdraw(amount, new Date());
     }
 
     @When("^printing the bank statement$")
     public void printing_the_bank_statement() throws Throwable {
-        List<AccountOperation> ops = account.statements();
+        printedOperations = account.statements();
     }
 
     @Then("^client should see:$")
     public void client_should_see(List<OperationSpec> statements) throws Throwable {
+        assertThat(printedOperations).isEqualTo(statements);
     }
 
 
@@ -51,7 +60,9 @@ public class MyStepdefs {
 
             AccountOperation that = (AccountOperation) o;
 
-            if (!date.equals(that.getDate())) return false;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+            if (!date.equals(dateFormat.format(that.getDate()))) return false;
             if (!credit.equals(that.getCredit())) return false;
             if (!debit.equals(that.getDebit())) return false;
             return balance.equals(that.getBalance());
@@ -61,10 +72,15 @@ public class MyStepdefs {
         @Override
         public int hashCode() {
             int result = date.hashCode();
-            result = 31 * result + credit.hashCode();
-            result = 31 * result + debit.hashCode();
+            result = 31 * result + ((credit != null) ? credit.hashCode() : 0) ;
+            result = 31 * result + ((debit != null) ? debit.hashCode(): 0);
             result = 31 * result + balance.hashCode();
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
         }
     }
 }
