@@ -24,4 +24,8 @@ public class AccountService {
 
     public void printStatement() {
     }
+
+    public BigDecimal balance() {
+        return null;
+    }
 }
